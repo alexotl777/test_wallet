@@ -64,7 +64,7 @@ class Wallet:
                         data
                     )
                     )
-                print(data)
+                
                 self.balance = float(data[0])
                 self.history = data[1:]
         else:
