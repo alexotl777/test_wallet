@@ -8,7 +8,11 @@ class DataValidator:
 
     @classmethod
     def check_digit(self, val: str | int) -> bool:
-        
+        '''
+        Вызывается без экземпляра
+        Получает - строку или int
+        Возвращает - true - значение является числом, иначе false
+        '''
         if isinstance(val, int) or isinstance(val, float):
             return True
         if val.isdigit():
@@ -23,7 +27,11 @@ class DataValidator:
     
     @classmethod
     def check_date(self, date: str | int) -> bool:
-
+        '''
+        Вызывается без экземпляра
+        Получает - строку
+        Возвращает - true - значение является датой в нужном формате, иначе false
+        '''
         format = r"[0-9]{4}-[0-9]{2}-[0-9]{2}"
         try: 
             date_format = "%Y-%m-%d"
@@ -41,6 +49,10 @@ class Wallet:
         return super().__new__(cls)
     
     def __init__(self):
+        '''
+        Если файла с историей нет - создает его, запрашивает начальную сумму кошелька и вносит в класс и файл
+        Иначе просто считывает баланс и историю из файла
+        '''
         if path.exists('wallet_history.txt'):
             with open('wallet_history.txt', 
                       'r',
@@ -72,6 +84,9 @@ class Wallet:
             self.history = []
 
     def clear(self):
+        '''
+        Очищает CLI
+        '''
         return os.system('cls')
 
     def _save_changes(self):
@@ -92,7 +107,11 @@ class Wallet:
             file.writelines(self.history)
 
     def _search_by_category(self, category: str) -> dict:
-
+        '''
+        Принимает - категорию в str
+        Возвращает - Если данные найдены - словарь, где ключ - id, значение - запись,
+        иначе ['NO DATA']
+        '''
         response = dict()
 
         for row, data in enumerate(self.history):
@@ -110,8 +129,12 @@ class Wallet:
             
         return response
 
-    def _search_by_money(self, money: float) -> dict:
-
+    def _search_by_money(self, money: float | int) -> dict:
+        '''
+        Принимает - сумму в float или int
+        Возвращает - Если данные найдены - словарь, где ключ - id, значение - запись,
+        иначе ['NO DATA']
+        '''
         response = dict()
 
         for row, data in enumerate(self.history):
@@ -130,7 +153,11 @@ class Wallet:
         return response
 
     def _search_by_date(self, date: str) -> dict:
-
+        '''
+        Принимает - дату в str в формате YYYY-MM-DD
+        Возвращает - Если данные найдены - словарь, где ключ - id, значение - запись,
+        иначе ['NO DATA']
+        '''
         response = dict()
 
         for row, data in enumerate(self.history):
@@ -149,7 +176,11 @@ class Wallet:
         return response
     
     def _search_by_description(self, description: str) -> dict:
-
+        '''
+        Принимает - текст описания, или части описания, или ключевое слово в str
+        Возвращает - Если данные найдены - словарь, где ключ - id, значение - запись,
+        иначе ['NO DATA']
+        '''
         response = dict()
 
         for row, data in enumerate(self.history):
@@ -168,6 +199,12 @@ class Wallet:
         return response
 
     def _searching(self, filter_kind: int) -> dict:
+        '''
+        Функция выбирает тип поиска
+        Принимает - тип поиска
+        Возвращает - Если данные найдены - словарь, где ключ - id, значение - запись,
+        иначе ['NO DATA']
+        '''
         match filter_kind:
             case 1:
                 print('Введи категорию (Доход/Расход):')
@@ -218,7 +255,10 @@ class Wallet:
         return result
 
     def search(self):
-
+        '''
+        Запрашивает у пользователя тип поиска, выдает ему результат,
+        а затем запрашивает на редактирование одной из найденных записей
+        '''
         result = []
 
         while not result:
@@ -275,7 +315,11 @@ class Wallet:
             break
 
     def add_recording(self):
-
+        '''
+        Запрашивает у пользователя категорию, сумму и описание,
+        затем собирает и заносит эту запись в атрибут класса history,
+        а после завершения программы все сохранияется в файле
+        '''
         while True:
             date = datetime.now().date().strftime('%Y-%m-%d')
             print('=='*35)
@@ -339,6 +383,13 @@ class Wallet:
         self.history.extend(recording)
 
     def edit_recording(self, records: dict):
+        '''
+        Принимает - словари с найденными записями
+        Возвращает - None
+        Запрашивает у пользователя id, потом, если id найден, тип поиска, выдает ему результат,
+        а затем запрашивает на редактирование одной из найденных записей
+        После этого данные заменяются новыми
+        '''
         while True:
             print('Выбери один id из найденных записей')
             id = input()
@@ -416,7 +467,11 @@ class Wallet:
             self.history[id + 3] = 'Описание: ' + description + '\n'
             break
 
-    def _operation_choice(self, operation):
+    def _operation_choice(self, operation: int):
+        '''
+        Принимает - тип операции в int
+        Выбирает дальнейшее действие для поданной операции
+        '''
         match operation:
             case 1:
                 self.search()
@@ -430,7 +485,9 @@ class Wallet:
                 print(f'Нет такого действия - {operation}')
 
     def loop(self):
-        
+        '''
+        Запускает все приложение личного финансового кошелька
+        '''
         while True:
 
             editable = 0
